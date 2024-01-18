@@ -16,7 +16,7 @@ import com.javaex.util.WebUtil;
 import com.javaex.vo.BoardVo;
 import com.javaex.vo.UserVo;
 
-@WebServlet("/board")
+@WebServlet("/board") //짱이다
 public class BoardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
