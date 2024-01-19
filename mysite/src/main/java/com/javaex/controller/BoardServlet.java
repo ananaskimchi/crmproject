@@ -109,9 +109,28 @@ public class BoardServlet extends HttpServlet {
 
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
-		} else {
+		} 
+		
+		
+		//게시글 검색
+		else if("search".equals(actionName))
+		{
+			System.out.println("ㅎㅇㅎㅇ");
+			String searchTitle = request.getParameter("searchTitle");
+			BoardVo searchVo = new BoardVo(searchTitle);
+			BoardDao dao = new BoardDaoImpl();
+			List<BoardVo> searchResults = dao.search(searchVo);
+			request.setAttribute("searchResults", searchResults);
+			WebUtil.redirect(request, response, "/mysite/board?a=list");
+		}		
+		
+		
+		
+		else {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 		}
+		
+	
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -127,5 +146,7 @@ public class BoardServlet extends HttpServlet {
 
 		return authUser;
 	}
+	
+	
 
 }

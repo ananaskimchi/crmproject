@@ -303,4 +303,58 @@ public class BoardDaoImpl implements BoardDao {
 
 		return count;
 	}
+	
+	public List<BoardVo> search(BoardVo vo) {
+		// 0. import java.sql.*;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs= null;
+		List<BoardVo>titles = new ArrayList<>();
+
+		try {
+		  conn = getConnection();
+
+			// 3. SQL문 준비 / 바인딩 / 실행
+		  String query = "SELECT b.no, b.title, u.name , b.hit, TO_CHAR(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\""
+			        + "FROM BOARD B, users u "
+			        + "WHERE TITLE = ?";
+
+			pstmt = conn.prepareStatement(query);
+
+			pstmt.setString(1, vo.getTitle());
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+	            BoardVo resultVo = new BoardVo();
+	            resultVo.setNo(rs.getInt("no"));
+	            resultVo.setTitle(rs.getString("title"));
+	            resultVo.setHit(rs.getInt("hit"));
+	            resultVo.setRegDate(rs.getString("reg_date"));
+	            resultVo.setUserNo(rs.getInt("user_no"));
+	            resultVo.setUserName(rs.getString("name"));
+
+	            titles.add(resultVo);
+	        }
+			// 4.결과처리
+			System.out.println(titles.size() + "건 검색");
+
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			// 5. 자원정리
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("error:" + e);
+			}
+
+		}
+
+		return titles;
+	}
 }

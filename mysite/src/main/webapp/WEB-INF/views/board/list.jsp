@@ -16,7 +16,8 @@
 		
 		<div id="content">
 			<div id="board">
-				<form id="search_form" action="" method="post">
+				<form id="search_form" action="/mysite/board" method="post">
+					<input type="hidden" name="a" value ="search">
 					<input type="text" id="kwd" name="kwd" value="">
 					<input type="submit" value="찾기">
 				</form>

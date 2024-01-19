@@ -13,6 +13,10 @@ public class BoardVo {
 	public BoardVo() {
 	}
 	
+	public BoardVo(String title) {
+		this.title = title;
+	}
+	
 	public BoardVo(int no, String title, String content) {
 		this.no = no;		
 		this.title = title;
