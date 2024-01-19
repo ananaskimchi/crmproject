@@ -3,6 +3,7 @@ package com.javaex.controller;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +36,10 @@ public class BoardServlet extends HttpServlet {
 
 			// 리스트 화면에 보내기
 			request.setAttribute("list", list);
-			WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
+//			WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
+			
+			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+			rd.forward(request, response);
 		} else if ("read".equals(actionName)) {
 			// 게시물 가져오기
 			int no = Integer.parseInt(request.getParameter("no"));
@@ -116,12 +120,19 @@ public class BoardServlet extends HttpServlet {
 		else if("search".equals(actionName))
 		{
 			System.out.println("ㅎㅇㅎㅇ");
-			String searchTitle = request.getParameter("searchTitle");
-			BoardVo searchVo = new BoardVo(searchTitle);
+			String searchThings = request.getParameter("searchThings");
+			
+			BoardVo searchVo = new BoardVo(searchThings);
+
 			BoardDao dao = new BoardDaoImpl();
 			List<BoardVo> searchResults = dao.search(searchVo);
-			request.setAttribute("searchResults", searchResults);
-			WebUtil.redirect(request, response, "/mysite/board?a=list");
+
+		
+			System.out.println(searchResults.toString());
+			request.setAttribute("list", searchResults);
+			
+			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+			rd.forward(request, response);
 		}		
 		
 		
