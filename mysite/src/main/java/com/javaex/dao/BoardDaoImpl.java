@@ -303,4 +303,68 @@ public class BoardDaoImpl implements BoardDao {
 
 		return count;
 	}
+	
+	public List<BoardVo> search(BoardVo vo) {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    List<BoardVo> searching = new ArrayList<>();
+
+	    try {
+	        conn = getConnection();
+
+	        String query = "SELECT b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date, u.no as user_no, u.name as user_name "
+	                + "FROM board b "
+	                + "LEFT JOIN users u ON b.user_no = u.no "
+	                + "WHERE TO_CHAR(b.REG_DATE, 'YYMMDD') LIKE ? "
+	                + "OR b.title LIKE ? "
+	                + "OR b.content LIKE ? "
+	                + "OR u.name LIKE ?";
+
+	        pstmt = conn.prepareStatement(query);
+
+	        pstmt.setString(1, "%" + vo.getRegDate() + "%");
+	        pstmt.setString(2, "%" + vo.getTitle() + "%");
+	        pstmt.setString(3, "%" + vo.getContent() + "%");
+	        pstmt.setString(4, "%" + vo.getUserName() + "%");
+
+
+
+
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            BoardVo resultVo = new BoardVo();
+	            resultVo.setNo(rs.getInt("no"));
+	            resultVo.setTitle(rs.getString("title"));
+	            resultVo.setHit(rs.getInt("hit"));
+	            resultVo.setRegDate(rs.getString("reg_date"));
+	            resultVo.setUserNo(rs.getInt("user_no"));
+	            resultVo.setUserName(rs.getString("user_name"));
+
+	            searching.add(resultVo);
+	        }
+
+	        System.out.println(searching.size() + "건 검색");
+
+	    } catch (SQLException e) {
+	        System.out.println("error:" + e);
+	    } finally {
+	        try {
+	            if (rs != null) {
+	                rs.close();
+	            }
+	            if (pstmt != null) {
+	                pstmt.close();
+	            }
+	            if (conn != null) {
+	                conn.close();
+	            }
+	        } catch (SQLException e) {
+	            System.out.println("error:" + e);
+	        }
+	    }
+
+	    return searching;
+	}
 }
