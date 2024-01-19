@@ -33,6 +33,9 @@
 								${fn:replace(boardVo.content, newLine, "<br>")}
 							</div>
 						</td>
+					<tr>
+						<td class="label">첨부파일</td>
+						<td>잇힝</td>
 					</tr>
 				</table>
 				<div class="bottom">

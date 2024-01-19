@@ -1,8 +1,10 @@
 package com.javaex.controller;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,14 +17,23 @@ import com.javaex.dao.BoardDaoImpl;
 import com.javaex.util.WebUtil;
 import com.javaex.vo.BoardVo;
 import com.javaex.vo.UserVo;
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
+
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.*;
 
 @WebServlet("/board")
 public class BoardServlet extends HttpServlet {
+	
 	private static final long serialVersionUID = 1L;
+	private static final String SAVEFOLDER = "C:/Users/User/git/crmproject/mysite/src/main/webapp/WEB-INF/views/storage";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
+//		response.setContentType("text/html; charset=UTF-8");
 		String actionName = request.getParameter("a");
 		System.out.println("board:" + actionName);
 
@@ -35,7 +46,10 @@ public class BoardServlet extends HttpServlet {
 
 			// 리스트 화면에 보내기
 			request.setAttribute("list", list);
-			WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
+//			WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
+			
+			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+			rd.forward(request, response);
 		} else if ("read".equals(actionName)) {
 			// 게시물 가져오기
 			int no = Integer.parseInt(request.getParameter("no"));
@@ -85,19 +99,60 @@ public class BoardServlet extends HttpServlet {
 			}
 
 		} else if ("write".equals(actionName)) {
+			// 게시물 작성
 			UserVo authUser = getAuthUser(request);
-
-			String title = request.getParameter("title");
-			String content = request.getParameter("content");
+			
+//			System.out.println(title);
+//			System.out.println(content);
+			
+			// 업로드되는 파일을 저장하는 저장소와 관련된 클래스
+			File attachesDir = new File(SAVEFOLDER); // 저장 경로를 변수에 담기
+			DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+			fileItemFactory.setRepository(attachesDir); // 저장 경로 설정
+			fileItemFactory.setSizeThreshold(-1);
+			ServletFileUpload fileUpload = new ServletFileUpload(fileItemFactory); //업로드 요청을 처리하는 ServletFileUpload 객체 생성
+			List<String> temp = new ArrayList<String>(); 
+			
+      try {
+				List<FileItem> items = fileUpload.parseRequest(request);
+				for(FileItem item : items) {
+					if(item.isFormField()) {
+						System.out.printf("파라미터 명 : %s, 파라미터 값 :  %s \n", item.getFieldName(), item.getString("UTF-8"));
+						temp.add(item.getString("UTF-8"));
+					} else {
+						System.out.printf("파라미터 명 : %s, 파일 명 : %s, 파일 크기 :  %s \n", item.getFieldName(), item.getName(), item.getSize());
+						if(item.getSize()>0){
+							String separator = File.separator;
+							int index = item.getName().lastIndexOf(separator);
+							String fileName = item.getName().substring(index + 1);
+							temp.add(fileName);
+							UUID uuid = UUID.randomUUID();
+							String rFileName = uuid + fileName;
+							File uploadFile = new File(attachesDir + separator + rFileName);
+							item.write(uploadFile);
+							item.delete();
+						}
+					}
+				}//for
+				System.out.println("파일 업로드 완료");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			int userNo = authUser.getNo();
-			System.out.println("userNo : ["+userNo+"]");
-			System.out.println("title : ["+title+"]");
-			System.out.println("content : ["+content+"]");
-
-			BoardVo vo = new BoardVo(title, content, userNo);
-			BoardDao dao = new BoardDaoImpl();
-			dao.insert(vo);
+			System.out.println(temp);
+//			String title = temp.get(0);
+//			String content = temp.get(1);
+//			String origFName = temp.get(2);
+//			System.out.println("userNo : ["+userNo+"]");
+//			System.out.println("title : ["+title+"]");
+//			System.out.println("content : ["+content+"]");
+//			System.out.println("filename : ["+origFName+"]");
+//
+//			BoardVo vo = new BoardVo(title, content, origFName, userNo); // 파일 원본이름 컬럼 넣어서 vo, dao 전부 수정하기
+//			BoardDao dao = new BoardDaoImpl();
+//			dao.insert(vo);
 
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
@@ -109,9 +164,35 @@ public class BoardServlet extends HttpServlet {
 
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
-		} else {
+		} 
+		
+		
+		//게시글 검색
+		else if("search".equals(actionName))
+		{
+			System.out.println("ㅎㅇㅎㅇ");
+			String searchThings = request.getParameter("searchThings");
+			
+			BoardVo searchVo = new BoardVo(searchThings);
+
+			BoardDao dao = new BoardDaoImpl();
+			List<BoardVo> searchResults = dao.search(searchVo);
+
+		
+			System.out.println(searchResults.toString());
+			request.setAttribute("list", searchResults);
+			
+			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+			rd.forward(request, response);
+		}		
+		
+		
+		
+		else {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 		}
+		
+	
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -127,5 +208,7 @@ public class BoardServlet extends HttpServlet {
 
 		return authUser;
 	}
+	
+	
 
 }
