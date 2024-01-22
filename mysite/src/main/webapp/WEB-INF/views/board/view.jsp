@@ -23,7 +23,7 @@
 		
 		<div id="navigation">
 			<ul>
-				<li><a href="">정종욱</a></li>
+				<li><a href="">홈</a></li>
 				<li><a href="">방명록</a></li>
 				<li><a href="">게시판</a></li>
 			</ul>

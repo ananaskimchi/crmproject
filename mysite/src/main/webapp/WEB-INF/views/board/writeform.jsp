@@ -32,8 +32,11 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="label">첨부파일</td>
+							<td class="label" rowspan="2">첨부파일</td>
 							<td><input type="file" name="file"></td>
+						</tr>
+						<tr>
+							<td><input type="file" name="file2"></td>
 						</tr>
 					</table>
 					<div class="bottom">

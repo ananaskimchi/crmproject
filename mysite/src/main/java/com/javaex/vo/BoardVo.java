@@ -9,6 +9,10 @@ public class BoardVo {
 	private String regDate;
 	private int userNo;
 	private String userName;
+	private String fileName;
+	private String origFName;
+	private String fileName2;
+	private String origFName2;
 
 	public BoardVo() {
 	}
@@ -32,6 +36,16 @@ public class BoardVo {
 		this.userNo = userNo;
 	}
 	
+	public BoardVo(String title, String content, int userNo, String fileName, String origFName, String fileName2, String origFName2) {
+		this.title = title;
+		this.content = content;
+		this.userNo = userNo;
+		this.fileName = fileName;
+		this.origFName = origFName;
+		this.fileName2 = fileName2;
+		this.origFName2 = origFName2;
+	}
+	
 	public BoardVo(int no, String title, int hit, String regDate, int userNo, String userName) {
 		this.no = no;
 		this.title = title;
@@ -45,7 +59,22 @@ public class BoardVo {
 		this(no, title, hit, regDate, userNo, userName);
 		this.content = content;
 	}
-
+	
+	public BoardVo(int no, String title, int hit, String regDate, int userNo, String fileName, String fileName2, String userName) {
+		this(no, title, hit, regDate, userNo, userName);
+		this.fileName = fileName;
+		this.fileName2 = fileName2;
+	}
+	
+	public BoardVo(int no, String title, String content, int hit, String regDate, int userNo, String fileName, String origFName, String fileName2, String origFName2, String userName) {
+		this(no, title, hit, regDate, userNo, userName);
+		this.content = content;
+		this.fileName = fileName;
+		this.origFName = origFName;
+		this.fileName2 = fileName2;
+		this.origFName2 = origFName2;
+	}
+	
 	public int getNo() {
 		return no;
 	}
@@ -102,10 +131,42 @@ public class BoardVo {
 		this.userName = userName;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getOrigFName() {
+		return origFName;
+	}
+
+	public void setOrigFName(String origFName) {
+		this.origFName = origFName;
+	}
+
+	public String getFileName2() {
+		return fileName2;
+	}
+
+	public void setFileName2(String fileName2) {
+		this.fileName2 = fileName2;
+	}
+
+	public String getOrigFName2() {
+		return origFName2;
+	}
+
+	public void setOrigFName2(String origFName2) {
+		this.origFName2 = origFName2;
+	}
+
 	@Override
 	public String toString() {
-		return "BoardVo [no=" + no + ", title=" + title + ", content=" + content + ", hit=" + hit + ", regDate="
-				+ regDate + ", userNo=" + userNo + ", userName=" + userName + "]";
+		return "BoardVo [no=" + no + ", title=" + title + ", content=" + content + ", hit=" + hit + ", regDate=" + regDate
+				+ ", userNo=" + userNo + ", userName=" + userName + ", fileName=" + fileName + ", fileName2=" + fileName2 + "]";
 	}
 
 }
