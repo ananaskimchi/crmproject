@@ -33,48 +33,43 @@ public class BoardServlet extends HttpServlet {
 
 	    String actionName = request.getParameter("a");
 	    System.out.println("board:" + actionName);
-
+	    
+	    // 페이징 관련 변수
+	    // 페이지 파라미터 값 가져오기
+    	String pageParameter = request.getParameter("page");
+    	// 페이지 파라미터 값이 비어있으면 기본값 1로 설정
+    	int currentPage = (pageParameter != null && !pageParameter.isEmpty()) ? Integer.parseInt(pageParameter) : 1;
+    	int itemsPerPage = 10;
+    	int startRow = (currentPage - 1) * itemsPerPage + 1;
+    	int endRow = startRow + itemsPerPage - 1;
+    	//페이징 변수 끝
+	    
 	    if ("list".equals(actionName)) {
-	    
-	    	// 페이지 파라미터 값 가져오기
-	    	String pageParameter = request.getParameter("page");
-
-	    	// 페이지 파라미터 값이 비어있으면 기본값 1로 설정
-	    	int currentPage = (pageParameter != null && !pageParameter.isEmpty()) ? Integer.parseInt(pageParameter) : 1;
-	    	
-	    	
-	    	int itemsPerPage = 10;
-	    	int startRow = (currentPage - 1) * itemsPerPage + 1;
-	    	int endRow = startRow + itemsPerPage - 1;
-	    	BoardDao dao = new BoardDaoImpl();
+	      BoardDao dao = new BoardDaoImpl();
 	    	List<BoardVo> boardlist = dao.getList();
-	    	
 	    	System.out.println(boardlist);
+	    	
 	    	int totalItem = boardlist.size();
-	        int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
-	        
-	        System.out.println("a:"+totalItem);
-	        System.out.println("a:"+totalPage);
-	        System.out.println("a:"+currentPage);
-	        System.out.println("a:"+totalPage);
-	        System.out.println(startRow);
-	        System.out.println(endRow);
-	        
-	        if(startRow <= totalItem) {
-	        	boardlist=boardlist.subList(startRow-1, Math.min(endRow, totalItem));
-	        } else {
-	            boardlist = new ArrayList<>();
-	        }
-	        request.setAttribute("boardlist", boardlist);
-	        request.setAttribute("currentPage", currentPage);
-	        request.setAttribute("totalPage", totalPage);
+	      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
+	      System.out.println("a:"+totalItem);
+	      System.out.println("a:"+totalPage);
+	      System.out.println("a:"+currentPage);
+	      System.out.println("a:"+totalPage);
+	      System.out.println(startRow);
+	      System.out.println(endRow);
+	      
+        if(startRow <= totalItem) {
+        	boardlist=boardlist.subList(startRow-1, Math.min(endRow, totalItem));
+        } else {
+          boardlist = new ArrayList<>();
+        }
+        
+        request.setAttribute("boardlist", boardlist);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPage", totalPage);
 
-	        RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
-	        rd.forward(request, response);
-	    
-	
-			
-			
+        RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+        rd.forward(request, response);
 		} else if ("read".equals(actionName)) {
 			// 게시물 가져오기
 			int no = Integer.parseInt(request.getParameter("no"));
@@ -224,10 +219,6 @@ public class BoardServlet extends HttpServlet {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
 		} 
-		
-		
-		
-		
 		//게시글 검색
 		else if("search".equals(actionName))
 		{
@@ -238,10 +229,20 @@ public class BoardServlet extends HttpServlet {
 
 			BoardDao dao = new BoardDaoImpl();
 			List<BoardVo> searchResults = dao.search(searchVo);
-
+			int totalItem = searchResults.size();
+      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
+      
+      if(startRow <= totalItem) {
+      	searchResults=searchResults.subList(startRow-1, Math.min(endRow, totalItem));
+      } else {
+      	searchResults = new ArrayList<>();
+      }
 		
 			System.out.println(searchResults.toString());
-			request.setAttribute("list", searchResults);
+			
+			request.setAttribute("boardlist", searchResults);
+			request.setAttribute("currentPage", 1);
+      request.setAttribute("totalPage", totalPage);
 			
 			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
 			rd.forward(request, response);

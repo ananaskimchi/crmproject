@@ -86,20 +86,6 @@
 				    <c:if test="${currentPage < totalPage}">
 				        <a href="board?a=list&page=${currentPage + 1}">▶</a>
 				    </c:if>
-   					<%-- <c:forEach var="pageNum" begin="1" end="${totalPage}">
-   					 	<c:choose>
-    						<c:when test="${pageNum == currentPage}">
-						        ${pageNum}
-						    </c:when>
-						    <c:otherwise>
-						        <a href="board?a=list&page=${pageNum}">${pageNum}</a>
-						    </c:otherwise>
-						</c:choose>
-   					 </c:forEach>
-   					 	
-   					 	<c:if test = "${currentPage < totalPage }">
-   					 		<a href="board?a=list&page=${currentPage + 1}">▶</a>
-   					 	</c:if> --%>
    					 			
 					<!-- <ul>
 						<li><a href="">◀</a></li>

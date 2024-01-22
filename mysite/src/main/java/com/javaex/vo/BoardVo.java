@@ -17,12 +17,12 @@ public class BoardVo {
 	public BoardVo() {
 	}
 	
-    public BoardVo(String searchThings) {
-        this.title = searchThings;
-        this.userName = searchThings;
-        this.content = searchThings;
-        this.regDate = searchThings;
-    }
+  public BoardVo(String searchThings) {
+      this.title = searchThings;
+      this.userName = searchThings;
+      this.content = searchThings;
+      this.regDate = searchThings;
+  }
     
 	public BoardVo(int no, String title, String content) {
 		this.no = no;		
