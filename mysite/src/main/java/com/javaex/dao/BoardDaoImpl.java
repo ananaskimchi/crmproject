@@ -23,7 +23,7 @@ public class BoardDaoImpl implements BoardDao {
     return conn;
   }
   
-	public List<BoardVo> getList() {
+	public List<BoardVo> getList(String keyField, String keyWord) {
 
 		// 0. import java.sql.*;
 		Connection conn = null;
@@ -33,15 +33,26 @@ public class BoardDaoImpl implements BoardDao {
 
 		try {
 			conn = getConnection();
-
-			// 3. SQL문 준비 / 바인딩 / 실행
-			String query = "select b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, b.file_name, b.file_name2, u.name "
-					     + " from board b, users u "
-					     + " where b.user_no = u.no "
-					     + " order by no desc";
 			
-			pstmt = conn.prepareStatement(query);
-
+			if (keyWord.equals("null") || keyWord.equals("")) {
+				// 3. SQL문 준비 / 바인딩 / 실행
+				String query = "select b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, b.file_name, b.file_name2, u.name "
+						     + " from board b, users u "
+						     + " where b.user_no = u.no "
+						     + " order by no desc";
+				
+				pstmt = conn.prepareStatement(query);
+			} else {
+				// 3. SQL문 준비 / 바인딩 / 실행
+				String query = "SELECT b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date, u.no as user_no, u.name as name, b.file_name, b.file_name2 "
+            + "FROM board b "
+            + "LEFT JOIN users u ON b.user_no = u.no "
+            + "WHERE " + keyField + " LIKE ? "
+            + "order by b.no desc";
+				
+				pstmt = conn.prepareStatement(query);
+				pstmt.setString(1, "%" + keyWord + "%");
+			}
 			rs = pstmt.executeQuery();
 			// 4.결과처리
 			while (rs.next()) {
@@ -54,8 +65,8 @@ public class BoardDaoImpl implements BoardDao {
 				String fileName2 = rs.getString("file_name2");
 				String userName = rs.getString("name");
 				
-				BoardVo vo = new BoardVo(no, title, hit, regDate, userNo, fileName, fileName2, userName);
-				list.add(vo);
+				BoardVo searching = new BoardVo(no, title, hit, regDate, userNo, fileName, fileName2, userName);
+				list.add(searching);
 			}
 			
 		} catch (SQLException e) {
@@ -320,69 +331,72 @@ public class BoardDaoImpl implements BoardDao {
 		return count;
 	}
 	
-	public List<BoardVo> search(BoardVo vo) {
-	    Connection conn = null;
-	    PreparedStatement pstmt = null;
-	    ResultSet rs = null;
-	    List<BoardVo> searching = new ArrayList<>();
+//	public List<BoardVo> search(BoardVo vo) {
+//	    Connection conn = null;
+//	    PreparedStatement pstmt = null;
+//	    ResultSet rs = null;
+//	    List<BoardVo> searching = new ArrayList<>();
+//
+//	    try {
+//	        conn = getConnection();
+//
+//	        String query = "SELECT b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date, b.file_name, b.file_name2, u.no as user_no, u.name as user_name "
+//	                + "FROM board b "
+//	                + "LEFT JOIN users u ON b.user_no = u.no "
+//	                + "WHERE TO_CHAR(b.REG_DATE, 'YYMMDD') LIKE ? "
+//	                + "OR b.title LIKE ? "
+//	                + "OR b.content LIKE ? "
+//	                + "OR b.file_name LIKE ? "
+//	                + "OR b.file_name2 LIKE ? "
+//	                + "OR u.name LIKE ?"
+//	                + "order by no desc";
+//
+//	        pstmt = conn.prepareStatement(query);
+//
+//	        pstmt.setString(1, "%" + vo.getRegDate() + "%");
+//	        pstmt.setString(2, "%" + vo.getTitle() + "%");
+//	        pstmt.setString(3, "%" + vo.getContent() + "%");
+//	        pstmt.setString(4, "%" + vo.getFileName() + "%");
+//	        pstmt.setString(5, "%" + vo.getFileName2() + "%");
+//	        pstmt.setString(6, "%" + vo.getUserName() + "%");
+//
+//	        rs = pstmt.executeQuery();
+//
+//	        while (rs.next()) {
+//	            BoardVo resultVo = new BoardVo();
+//	            resultVo.setNo(rs.getInt("no"));
+//	            resultVo.setTitle(rs.getString("title"));
+//	            resultVo.setHit(rs.getInt("hit"));
+//	            resultVo.setRegDate(rs.getString("reg_date"));
+//	            resultVo.setFileName(rs.getString("file_name"));
+//	            resultVo.setFileName2(rs.getString("file_name2"));
+//	            resultVo.setUserNo(rs.getInt("user_no"));
+//	            resultVo.setUserName(rs.getString("user_name"));
+//
+//	            searching.add(resultVo);
+//	        }
+//
+//	        System.out.println(searching.size() + "건 검색");
+//
+//	    } catch (SQLException e) {
+//	        System.out.println("error:" + e);
+//	    } finally {
+//	        try {
+//	            if (rs != null) {
+//	                rs.close();
+//	            }
+//	            if (pstmt != null) {
+//	                pstmt.close();
+//	            }
+//	            if (conn != null) {
+//	                conn.close();
+//	            }
+//	        } catch (SQLException e) {
+//	            System.out.println("error:" + e);
+//	        }
+//	    }
+//
+//	    return searching;
+//	}
 
-	    try {
-	        conn = getConnection();
-
-	        String query = "SELECT b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date, u.no as user_no, u.name as user_name "
-	                + "FROM board b "
-	                + "LEFT JOIN users u ON b.user_no = u.no "
-	                + "WHERE TO_CHAR(b.REG_DATE, 'YYMMDD') LIKE ? "
-	                + "OR b.title LIKE ? "
-	                + "OR b.content LIKE ? "
-	                + "OR u.name LIKE ?"
-	                + "order by no desc";
-
-	        pstmt = conn.prepareStatement(query);
-
-	        pstmt.setString(1, "%" + vo.getRegDate() + "%");
-	        pstmt.setString(2, "%" + vo.getTitle() + "%");
-	        pstmt.setString(3, "%" + vo.getContent() + "%");
-	        pstmt.setString(4, "%" + vo.getUserName() + "%");
-
-
-	        rs = pstmt.executeQuery();
-
-	        while (rs.next()) {
-	            BoardVo resultVo = new BoardVo();
-	            resultVo.setNo(rs.getInt("no"));
-	            resultVo.setTitle(rs.getString("title"));
-	            resultVo.setHit(rs.getInt("hit"));
-	            resultVo.setRegDate(rs.getString("reg_date"));
-	            resultVo.setUserNo(rs.getInt("user_no"));
-	            resultVo.setUserName(rs.getString("user_name"));
-
-	            searching.add(resultVo);
-	        }
-
-	        System.out.println(searching.size() + "건 검색");
-
-	    } catch (SQLException e) {
-	        System.out.println("error:" + e);
-	    } finally {
-	        try {
-	            if (rs != null) {
-	                rs.close();
-	            }
-	            if (pstmt != null) {
-	                pstmt.close();
-	            }
-	            if (conn != null) {
-	                conn.close();
-	            }
-	        } catch (SQLException e) {
-	            System.out.println("error:" + e);
-	        }
-	    }
-
-	    return searching;
-	}
-
-
-	
 }

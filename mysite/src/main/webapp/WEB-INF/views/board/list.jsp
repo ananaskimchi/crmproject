@@ -17,8 +17,14 @@
 		<div id="content">
 			<div id="board">
 				<form id="search_form" action="/mysite/board" method="post">
-					<input type="hidden" name="a" value ="search">
-					<input type="text" id="kwd" name="searchThings" value="">
+					<select name="keyField" size="1" >
+    				<option value="b.title"> 제 목</option>
+    				<option value="b.content||UPPER(b.file_name)||UPPER(b.file_name2)"> 내 용</option>
+    				<option value="u.name"> 글쓴이</option>
+    				<option value="to_char(b.reg_date, 'YY-MM-DD HH24:MI')"> 작성일</option>
+   				</select>
+					<input type="hidden" name="a" value ="list">
+					<input type="text" id="kwd" name="keyWord">
 					<input type="submit" value="찾기">
 				</form>
 				<table class="tbl-ex">
@@ -54,7 +60,7 @@
 				            <c:forEach var="pageNum" begin="1" end="${totalPage}">
 				                <c:choose>
 				                    <c:when test="${pageNum == currentPage}">
-				                        ${pageNum}
+				                        <a class="selected">${pageNum}</a>
 				                    </c:when>
 				                    <c:otherwise>
 				                        <a href="board?a=list&page=${pageNum}">${pageNum}</a>
@@ -71,7 +77,7 @@
 				                    <c:otherwise>
 				                        <c:choose>
 				                            <c:when test="${pageNum == currentPage}">
-				                                ${pageNum}
+				                                <a class="selected">${pageNum}</a>
 				                            </c:when>
 				                            <c:otherwise>
 				                                <a href="board?a=list&page=${pageNum}">${pageNum}</a>
@@ -87,20 +93,6 @@
 				        <a href="board?a=list&page=${currentPage + 1}">▶</a>
 				    </c:if>
    					 			
-					<!-- <ul>
-						<li><a href="">◀</a></li>
-						<li class="selected">1</li>
-						<li><a href="">2</a></li>
-						<li><a href="">3</a></li>
-						<li><a href="">4</a></li>
-						<li><a href="">5</a></li>
-						<li><a href="">6</a></li>
-						<li><a href="">7</a></li>
-						<li><a href="">8</a></li>
-						<li><a href="">9</a></li>
-						<li><a href="">10</a></li>
-						<li><a href="">▶</a></li>
-					</ul> -->
 				</div>				
 				<c:if test="${authUser != null }">
 					<div class="bottom">

@@ -22,6 +22,8 @@ public class BoardVo {
       this.userName = searchThings;
       this.content = searchThings;
       this.regDate = searchThings;
+      this.fileName = searchThings;
+      this.fileName2 = searchThings;
   }
     
 	public BoardVo(int no, String title, String content) {

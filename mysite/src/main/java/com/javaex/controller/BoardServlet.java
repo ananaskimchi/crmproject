@@ -33,21 +33,31 @@ public class BoardServlet extends HttpServlet {
 
 	    String actionName = request.getParameter("a");
 	    System.out.println("board:" + actionName);
-	    
-	    // 페이징 관련 변수
-	    // 페이지 파라미터 값 가져오기
-    	String pageParameter = request.getParameter("page");
-    	// 페이지 파라미터 값이 비어있으면 기본값 1로 설정
-    	int currentPage = (pageParameter != null && !pageParameter.isEmpty()) ? Integer.parseInt(pageParameter) : 1;
-    	int itemsPerPage = 10;
-    	int startRow = (currentPage - 1) * itemsPerPage + 1;
-    	int endRow = startRow + itemsPerPage - 1;
-    	//페이징 변수 끝
+    	
+    	// 검색 관련 변수
+    	String keyField = "";
+    	String keyWord = "";
 	    
 	    if ("list".equals(actionName)) {
+	    	if (request.getParameter("keyWord") != null) {
+	    		keyWord = request.getParameter("keyWord");
+	    		keyField = request.getParameter("keyField");
+	    	}
 	      BoardDao dao = new BoardDaoImpl();
-	    	List<BoardVo> boardlist = dao.getList();
+	      System.out.println("keyword:" + keyWord);
+    		System.out.println("keyfield:" + keyField);
+	    	List<BoardVo> boardlist = dao.getList(keyField, keyWord);
 	    	System.out.println(boardlist);
+	    	
+	    	// 페이징 관련 변수
+		    // 페이지 파라미터 값 가져오기
+	    	String pageParameter = request.getParameter("page");
+	    	// 페이지 파라미터 값이 비어있으면 기본값 1로 설정
+	    	int currentPage = (pageParameter != null && !pageParameter.isEmpty()) ? Integer.parseInt(pageParameter) : 1;
+	    	int itemsPerPage = 10;
+	    	int startRow = (currentPage - 1) * itemsPerPage + 1;
+	    	int endRow = startRow + itemsPerPage - 1;
+	    	//페이징 변수 끝
 	    	
 	    	int totalItem = boardlist.size();
 	      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
@@ -67,6 +77,8 @@ public class BoardServlet extends HttpServlet {
         request.setAttribute("boardlist", boardlist);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPage", totalPage);
+        request.setAttribute("keyWord", keyWord);
+        request.setAttribute("keyField", keyField);
 
         RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
         rd.forward(request, response);
@@ -122,9 +134,6 @@ public class BoardServlet extends HttpServlet {
 			// 게시물 작성
 			UserVo authUser = getAuthUser(request);
 			
-//			System.out.println(title);
-//			System.out.println(content);
-			
 			// 업로드되는 파일을 저장하는 저장소와 관련된 클래스
 			File attachesDir = new File(SAVEFOLDER); // 저장 경로를 변수에 담기
 			DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
@@ -166,8 +175,8 @@ public class BoardServlet extends HttpServlet {
 			System.out.println(temp);
 			String title = temp.get(0);
 			String content = temp.get(1);
-			String fileName = temp.get(2);
-			String origFName = temp.get(3);
+			String fileName = (temp.size()>2) ? temp.get(2) : null;
+			String origFName = (temp.size()>2) ? temp.get(3) : null;
 			String fileName2 = (temp.size()>4) ? temp.get(4) : null;
 			String origFName2 = (temp.size()>4) ? temp.get(5) : null;
 			System.out.println("userNo : ["+userNo+"]");
@@ -219,34 +228,34 @@ public class BoardServlet extends HttpServlet {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
 		} 
-		//게시글 검색
-		else if("search".equals(actionName))
-		{
-			System.out.println("ㅎㅇㅎㅇ");
-			String searchThings = request.getParameter("searchThings");
-			
-			BoardVo searchVo = new BoardVo(searchThings);
-
-			BoardDao dao = new BoardDaoImpl();
-			List<BoardVo> searchResults = dao.search(searchVo);
-			int totalItem = searchResults.size();
-      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
-      
-      if(startRow <= totalItem) {
-      	searchResults=searchResults.subList(startRow-1, Math.min(endRow, totalItem));
-      } else {
-      	searchResults = new ArrayList<>();
-      }
-		
-			System.out.println(searchResults.toString());
-			
-			request.setAttribute("boardlist", searchResults);
-			request.setAttribute("currentPage", 1);
-      request.setAttribute("totalPage", totalPage);
-			
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
-			rd.forward(request, response);
-		}		
+//		//게시글 검색
+//		else if("search".equals(actionName))
+//		{
+//			System.out.println("검색시작");
+//			String searchThings = request.getParameter("searchThings");
+//			
+//			BoardVo searchVo = new BoardVo(searchThings);
+//
+//			BoardDao dao = new BoardDaoImpl();
+//			List<BoardVo> searchResults = dao.search(searchVo);
+//			int totalItem = searchResults.size();
+//      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
+//      
+//      if(startRow <= totalItem) {
+//      	searchResults=searchResults.subList(startRow-1, Math.min(endRow, totalItem));
+//      } else {
+//      	searchResults = new ArrayList<>();
+//      }
+//		
+//			System.out.println(searchResults.toString());
+//			
+//			request.setAttribute("boardlist", searchResults);
+//			request.setAttribute("currentPage", 1);
+//      request.setAttribute("totalPage", totalPage);
+//			
+//			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+//			rd.forward(request, response);
+//		}		
 		
 		else {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");

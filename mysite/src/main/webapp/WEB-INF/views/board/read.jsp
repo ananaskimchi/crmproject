@@ -35,9 +35,16 @@
 						</td>
 					<tr>
 						<td rowspan="2" class="label">첨부파일</td>
-						<td>
-							<a href="/mysite/board?a=download&fileName=${boardVo.origFName }" download="${boardVo.fileName }">${boardVo.fileName }</a>
-						</td>
+						<c:choose>
+							<c:when test="${not empty boardVo.origFName }" >
+								<td>
+									<a href="/mysite/board?a=download&fileName=${boardVo.origFName }" download="${boardVo.fileName }">${boardVo.fileName }</a>
+								</td>
+							</c:when>
+							<c:otherwise>
+								<td>파일이 없습니다.</td>
+							</c:otherwise>
+						</c:choose>
 					</tr>
 					<c:if test="${not empty boardVo.origFName2 }" >
 						<tr>
