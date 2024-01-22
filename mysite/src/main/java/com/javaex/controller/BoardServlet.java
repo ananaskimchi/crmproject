@@ -150,6 +150,7 @@ public class BoardServlet extends HttpServlet {
 			System.out.println("title : ["+title+"]");
 			System.out.println("content : ["+content+"]");
 			System.out.println("filename : ["+fileName+"]");
+			System.out.println("filename2 : ["+fileName2+"]");
 
 			BoardVo vo = new BoardVo(title, content, userNo, fileName, origFName, fileName2, origFName2);
 			BoardDao dao = new BoardDaoImpl();
