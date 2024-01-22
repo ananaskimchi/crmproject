@@ -148,13 +148,14 @@ public class BoardDaoImpl implements BoardDao {
 		  conn = getConnection();
 		  
 		  System.out.println("vo.userNo : ["+vo.getUserNo()+"]");
+
       System.out.println("vo.title : ["+vo.getTitle()+"]");
       System.out.println("vo.content : ["+vo.getContent()+"]");
       System.out.println("vo.fileName : ["+vo.getFileName()+"]");
       System.out.println("vo.origFName : ["+vo.getOrigFName()+"]");
       System.out.println("vo.fileName2 : ["+vo.getFileName2()+"]");
       System.out.println("vo.origFName2 : ["+vo.getOrigFName2()+"]");
-      
+
 			// 3. SQL문 준비 / 바인딩 / 실행
 			String query = "insert into board (no, title, content, hit, reg_date, user_no, file_name, orig_file_name, file_name2, orig_file_name2) values (seq_board_no.nextval, ?, ?, 0, sysdate, ?, ?, ?, ?, ?)";
 			pstmt = conn.prepareStatement(query);
@@ -162,10 +163,12 @@ public class BoardDaoImpl implements BoardDao {
 			pstmt.setString(1, vo.getTitle());
 			pstmt.setString(2, vo.getContent());
 			pstmt.setInt(3, vo.getUserNo());
+
 			pstmt.setString(4, vo.getFileName());
 			pstmt.setString(5, vo.getOrigFName());
 			pstmt.setString(6, vo.getFileName2());
 			pstmt.setString(7, vo.getOrigFName2());
+
 			
       
 			count = pstmt.executeUpdate();
@@ -317,6 +320,117 @@ public class BoardDaoImpl implements BoardDao {
 		return count;
 	}
 	
+	//페이징, 전체 글 개수 조회
+	public int getTotalItem() {
+		// 0. import java.sql.*;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		int totalItem = 0;
+
+		try {
+		  conn = getConnection();
+
+			// 3. SQL문 준비 / 바인딩 / 실행
+			String query = "select count(*) from board ";
+			pstmt = conn.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				totalItem = rs.getInt(1);
+			}
+
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			// 5. 자원정리
+			try {
+				if (pstmt != null) {
+					pstmt.close();
+				}
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				System.out.println("error:" + e);
+			}
+
+		}
+
+		return totalItem;
+	}
+	
+	//페이징, 현재 페이지에 보여지는 개수 조정
+	
+	
+	public List<BoardVo> getBoardList(int currentPage, int itemsPerPage) {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    List<BoardVo> getBoardList = new ArrayList<>();
+	    
+//	    int totalPage = (int)Math.ceil((double)getTotalItem() / itemsPerPage);
+	    int startrow  = (currentPage -1) * itemsPerPage +1;
+	    int endrow = startrow + itemsPerPage-1;
+	    
+	    try {
+	        conn = getConnection();
+
+	        String query = "SELECT *\r\n"
+	        		+ "FROM (\r\n"
+	        		+ "    SELECT rownum rnum, b.no, b.title, b.name as user_name, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date\r\n"
+	        		+ "    FROM (\r\n"
+	        		+ "        SELECT  b.no, b.title, u.name, b.hit, to_date(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date\r\n"
+	        		+ "        FROM BOARD b\r\n"
+	        		+ "        LEFT JOIN users u ON b.user_no = u.NO\r\n"
+	        		+ "        ORDER BY reg_date DESC\r\n"
+	        		+ "    ) b"
+	        		+ ")"
+	        		+ "WHERE rnum >= ? AND rnum <= ?";
+
+	        pstmt = conn.prepareStatement(query);
+
+
+	        pstmt.setInt(1, startrow);
+	        pstmt.setInt(2, endrow);
+
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            BoardVo resultVo = new BoardVo();
+	            resultVo.setNo(rs.getInt("no"));
+	            resultVo.setTitle(rs.getString("title"));
+	            resultVo.setUserName(rs.getString("user_name"));
+	            resultVo.setHit(rs.getInt("hit"));
+	            resultVo.setRegDate(rs.getString("reg_date"));
+
+
+	            getBoardList.add(resultVo);
+	        }
+
+
+	    } catch (SQLException e) {
+	        System.out.println("error:" + e);
+	    } finally {
+	        try {
+	            if (rs != null) {
+	                rs.close();
+	            }
+	            if (pstmt != null) {
+	                pstmt.close();
+	            }
+	            if (conn != null) {
+	                conn.close();
+	            }
+	        } catch (SQLException e) {
+	            System.out.println("error:" + e);
+	        }
+	    }
+
+	    return getBoardList;
+	}
+	
+	
 	public List<BoardVo> search(BoardVo vo) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
@@ -380,4 +494,7 @@ public class BoardDaoImpl implements BoardDao {
 
 	    return searching;
 	}
+
+
+	
 }

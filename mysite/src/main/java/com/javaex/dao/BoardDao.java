@@ -11,4 +11,6 @@ public interface BoardDao {
 	public int update(BoardVo vo);   // 게시물 수정
 	public int hitUpdate(BoardVo vo);   // 조회수 수정
 	public List<BoardVo> search(BoardVo searchVo); // 게시글 조회
+	
+	
 }

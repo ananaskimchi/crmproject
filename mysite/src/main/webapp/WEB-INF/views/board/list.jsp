@@ -30,7 +30,7 @@
 						<th>작성일</th>
 						<th>&nbsp;</th>
 					</tr>				
-					<c:forEach items="${list }" var="vo">
+					<c:forEach items="${boardlist }" var="vo">
 						<tr>
 							<td>${vo.no }</td>
 							<td><a href="/mysite/board?a=read&no=${vo.no }"> ${vo.title } </a></td>
@@ -46,7 +46,62 @@
 					</c:forEach>
 				</table>
 				<div class="pager">
-					<ul>
+				     <c:if test="${currentPage > 1}">
+        				<a href="board?a=list&page=${currentPage - 1}">◀</a>
+   					 </c:if>
+   					  <c:choose>
+				        <c:when test="${totalPage <= 10}">
+				            <c:forEach var="pageNum" begin="1" end="${totalPage}">
+				                <c:choose>
+				                    <c:when test="${pageNum == currentPage}">
+				                        ${pageNum}
+				                    </c:when>
+				                    <c:otherwise>
+				                        <a href="board?a=list&page=${pageNum}">${pageNum}</a>
+				                    </c:otherwise>
+				                </c:choose>
+				            </c:forEach>
+				        </c:when>
+				        <c:otherwise>
+				            <c:forEach var="pageNum" begin="${currentPage - 5}" end="${currentPage + 5}">
+				                <c:choose>
+				                    <c:when test="${pageNum < 1 or pageNum > totalPage}">
+				                        <!-- 페이지 범위를 벗어나면 표시하지 않음 -->
+				                    </c:when>
+				                    <c:otherwise>
+				                        <c:choose>
+				                            <c:when test="${pageNum == currentPage}">
+				                                ${pageNum}
+				                            </c:when>
+				                            <c:otherwise>
+				                                <a href="board?a=list&page=${pageNum}">${pageNum}</a>
+				                            </c:otherwise>
+				                        </c:choose>
+				                    </c:otherwise>
+				                </c:choose>
+				            </c:forEach>
+				        </c:otherwise>
+				    </c:choose>
+				
+				    <c:if test="${currentPage < totalPage}">
+				        <a href="board?a=list&page=${currentPage + 1}">▶</a>
+				    </c:if>
+   					<%-- <c:forEach var="pageNum" begin="1" end="${totalPage}">
+   					 	<c:choose>
+    						<c:when test="${pageNum == currentPage}">
+						        ${pageNum}
+						    </c:when>
+						    <c:otherwise>
+						        <a href="board?a=list&page=${pageNum}">${pageNum}</a>
+						    </c:otherwise>
+						</c:choose>
+   					 </c:forEach>
+   					 	
+   					 	<c:if test = "${currentPage < totalPage }">
+   					 		<a href="board?a=list&page=${currentPage + 1}">▶</a>
+   					 	</c:if> --%>
+   					 			
+					<!-- <ul>
 						<li><a href="">◀</a></li>
 						<li class="selected">1</li>
 						<li><a href="">2</a></li>
@@ -59,7 +114,7 @@
 						<li><a href="">9</a></li>
 						<li><a href="">10</a></li>
 						<li><a href="">▶</a></li>
-					</ul>
+					</ul> -->
 				</div>				
 				<c:if test="${authUser != null }">
 					<div class="bottom">
