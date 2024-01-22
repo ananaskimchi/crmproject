@@ -188,11 +188,12 @@ public class BoardServlet extends HttpServlet {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
 		} else if ("download".equals(actionName)) {
-			//파일 다운로드
+			// 파일 경로, 이름 불러오기
 			String fileDir = SAVEFOLDER;
 			String fileName = (String)request.getParameter("fileName");
 			System.out.println("filename = "+ fileName);
 			
+			// response에서 OutputStream 객체 가져오기
 			OutputStream out = response.getOutputStream();
       String downFile = fileDir + File.separator + fileName;
       File f = new File(downFile);
@@ -202,18 +203,18 @@ public class BoardServlet extends HttpServlet {
       
       FileInputStream in = new FileInputStream(f);
       
+      // 파일에서 버퍼로 데이터를 읽어와 출력(다운로드)
       byte[] buffer = new byte[(int) f.length()];
       while(true) {
       	int count = in.read(buffer);
-          if(count==-1)
+          if(count==-1) {
           	break;
+          }
           out.write(buffer,0,count);
       }
       in.close();
       out.close();
-      
-			WebUtil.redirect(request, response, "/mysite/board?a=list");
-			
+      			
 		} else if ("delete".equals(actionName)) {
 			int no = Integer.parseInt(request.getParameter("no"));
 
