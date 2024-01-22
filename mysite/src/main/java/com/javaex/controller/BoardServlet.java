@@ -1,7 +1,6 @@
 package com.javaex.controller;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import javax.servlet.RequestDispatcher;
@@ -17,8 +16,6 @@ import com.javaex.dao.BoardDaoImpl;
 import com.javaex.util.WebUtil;
 import com.javaex.vo.BoardVo;
 import com.javaex.vo.UserVo;
-import com.oreilly.servlet.MultipartRequest;
-import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -156,6 +153,7 @@ public class BoardServlet extends HttpServlet {
 							temp.add(fileName);
 							UUID uuid = UUID.randomUUID();
 							String rFileName = uuid + fileName;
+							temp.add(rFileName);
 							File uploadFile = new File(attachesDir + separator + rFileName);
 							item.write(uploadFile);
 							item.delete();
@@ -171,20 +169,51 @@ public class BoardServlet extends HttpServlet {
 			
 			int userNo = authUser.getNo();
 			System.out.println(temp);
-//			String title = temp.get(0);
-//			String content = temp.get(1);
-//			String origFName = temp.get(2);
-//			System.out.println("userNo : ["+userNo+"]");
-//			System.out.println("title : ["+title+"]");
-//			System.out.println("content : ["+content+"]");
-//			System.out.println("filename : ["+origFName+"]");
-//
-//			BoardVo vo = new BoardVo(title, content, origFName, userNo); // 파일 원본이름 컬럼 넣어서 vo, dao 전부 수정하기
-//			BoardDao dao = new BoardDaoImpl();
-//			dao.insert(vo);
+			String title = temp.get(0);
+			String content = temp.get(1);
+			String fileName = temp.get(2);
+			String origFName = temp.get(3);
+			String fileName2 = (temp.size()>4) ? temp.get(4) : null;
+			String origFName2 = (temp.size()>4) ? temp.get(5) : null;
+			System.out.println("userNo : ["+userNo+"]");
+			System.out.println("title : ["+title+"]");
+			System.out.println("content : ["+content+"]");
+			System.out.println("filename : ["+fileName+"]");
+			System.out.println("filename2 : ["+fileName2+"]");
+
+			BoardVo vo = new BoardVo(title, content, userNo, fileName, origFName, fileName2, origFName2);
+			BoardDao dao = new BoardDaoImpl();
+			dao.insert(vo);
 
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
+		} else if ("download".equals(actionName)) {
+			//파일 다운로드
+			String fileDir = SAVEFOLDER;
+			String fileName = (String)request.getParameter("fileName");
+			System.out.println("filename = "+ fileName);
+			
+			OutputStream out = response.getOutputStream();
+      String downFile = fileDir + File.separator + fileName;
+      File f = new File(downFile);
+      
+      response.setHeader("Cache-Control","no-cache");
+      response.addHeader("Cache-disposition", "attachment; fileName="+fileName);
+      
+      FileInputStream in = new FileInputStream(f);
+      
+      byte[] buffer = new byte[(int) f.length()];
+      while(true) {
+      	int count = in.read(buffer);
+          if(count==-1)
+          	break;
+          out.write(buffer,0,count);
+      }
+      in.close();
+      out.close();
+      
+			WebUtil.redirect(request, response, "/mysite/board?a=list");
+			
 		} else if ("delete".equals(actionName)) {
 			int no = Integer.parseInt(request.getParameter("no"));
 
@@ -216,8 +245,6 @@ public class BoardServlet extends HttpServlet {
 			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
 			rd.forward(request, response);
 		}		
-		
-		
 		
 		else {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");

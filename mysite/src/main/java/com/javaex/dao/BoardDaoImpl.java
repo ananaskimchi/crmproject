@@ -35,7 +35,7 @@ public class BoardDaoImpl implements BoardDao {
 			conn = getConnection();
 
 			// 3. SQL문 준비 / 바인딩 / 실행
-			String query = "select b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, u.name "
+			String query = "select b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, b.file_name, b.file_name2, u.name "
 					     + " from board b, users u "
 					     + " where b.user_no = u.no "
 					     + " order by no desc";
@@ -50,9 +50,11 @@ public class BoardDaoImpl implements BoardDao {
 				int hit = rs.getInt("hit");
 				String regDate = rs.getString("reg_date");
 				int userNo = rs.getInt("user_no");
+				String fileName = rs.getString("file_name");
+				String fileName2 = rs.getString("file_name2");
 				String userName = rs.getString("name");
 				
-				BoardVo vo = new BoardVo(no, title, hit, regDate, userNo, userName);
+				BoardVo vo = new BoardVo(no, title, hit, regDate, userNo, fileName, fileName2, userName);
 				list.add(vo);
 			}
 			
@@ -90,7 +92,7 @@ public class BoardDaoImpl implements BoardDao {
 		  conn = getConnection();
 
 			// 3. SQL문 준비 / 바인딩 / 실행
-			String query = "select b.no, b.title, b.content, b.hit, b.reg_date, b.user_no, u.name "
+			String query = "select b.no, b.title, b.content, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, b.file_name, b.orig_file_name, b.file_name2, b.orig_file_name2, u.name "
 					     + "from board b, users u "
 					     + "where b.user_no = u.no "
 					     + "and b.no = ?";
@@ -106,9 +108,13 @@ public class BoardDaoImpl implements BoardDao {
 				int hit = rs.getInt("hit");
 				String regDate = rs.getString("reg_date");
 				int userNo = rs.getInt("user_no");
+				String fileName = rs.getString("file_name");
+				String origFName = rs.getString("orig_file_name");
+				String fileName2 = rs.getString("file_name2");
+				String origFName2 = rs.getString("orig_file_name2");
 				String userName = rs.getString("name");
 				
-				boardVo = new BoardVo(no, title, content, hit, regDate, userNo, userName);
+				boardVo = new BoardVo(no, title, content, hit, regDate, userNo, fileName, origFName, fileName2, origFName2, userName);
 			}
 			
 		} catch (SQLException e) {
@@ -142,16 +148,27 @@ public class BoardDaoImpl implements BoardDao {
 		  conn = getConnection();
 		  
 		  System.out.println("vo.userNo : ["+vo.getUserNo()+"]");
-		  System.out.println("vo.title : ["+vo.getTitle()+"]");
-		  System.out.println("vo.content : ["+vo.getContent()+"]");
-      
+
+      System.out.println("vo.title : ["+vo.getTitle()+"]");
+      System.out.println("vo.content : ["+vo.getContent()+"]");
+      System.out.println("vo.fileName : ["+vo.getFileName()+"]");
+      System.out.println("vo.origFName : ["+vo.getOrigFName()+"]");
+      System.out.println("vo.fileName2 : ["+vo.getFileName2()+"]");
+      System.out.println("vo.origFName2 : ["+vo.getOrigFName2()+"]");
+
 			// 3. SQL문 준비 / 바인딩 / 실행
-			String query = "insert into board (no, title, content, hit, reg_date, user_no) values (seq_board_no.nextval, ?, ?, 0, sysdate, ?)";
+			String query = "insert into board (no, title, content, hit, reg_date, user_no, file_name, orig_file_name, file_name2, orig_file_name2) values (seq_board_no.nextval, ?, ?, 0, sysdate, ?, ?, ?, ?, ?)";
 			pstmt = conn.prepareStatement(query);
 
 			pstmt.setString(1, vo.getTitle());
 			pstmt.setString(2, vo.getContent());
 			pstmt.setInt(3, vo.getUserNo());
+
+			pstmt.setString(4, vo.getFileName());
+			pstmt.setString(5, vo.getOrigFName());
+			pstmt.setString(6, vo.getFileName2());
+			pstmt.setString(7, vo.getOrigFName2());
+
 			
       
 			count = pstmt.executeUpdate();
