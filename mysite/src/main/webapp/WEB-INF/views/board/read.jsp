@@ -34,9 +34,18 @@
 							</div>
 						</td>
 					<tr>
-						<td class="label">첨부파일</td>
-						<td>잇힝</td>
+						<td rowspan="2" class="label">첨부파일</td>
+						<td>
+							<a href="/mysite/board?a=download&fileName=${boardVo.origFName }" download=${boardVo.fileName }>${boardVo.fileName }</a>
+						</td>
 					</tr>
+					<c:if test="${not empty boardVo.origFName2 }" >
+						<tr>
+							<td>
+								<a href="/mysite/board?a=download&fileName=${boardVo.origFName2 }" download="${boardVo.fileName2 }">${boardVo.fileName }</a>
+							</td>
+						</tr>
+					</c:if>
 				</table>
 				<div class="bottom">
 					<a href="/mysite/board">글목록</a>
