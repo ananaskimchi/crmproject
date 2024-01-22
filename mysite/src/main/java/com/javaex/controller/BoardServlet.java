@@ -31,25 +31,53 @@ public class BoardServlet extends HttpServlet {
 	private static final String SAVEFOLDER = "C:/Users/User/git/crmproject/mysite/src/main/webapp/WEB-INF/views/storage";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
-//		response.setContentType("text/html; charset=UTF-8");
-		String actionName = request.getParameter("a");
-		System.out.println("board:" + actionName);
+	        throws ServletException, IOException {
+	    request.setCharacterEncoding("UTF-8");
 
-		if ("list".equals(actionName)) {
-			// 리스트 가져오기
-			BoardDao dao = new BoardDaoImpl();
-			List<BoardVo> list = dao.getList();
+	    String actionName = request.getParameter("a");
+	    System.out.println("board:" + actionName);
 
-			System.out.println(list.toString());
+	    if ("list".equals(actionName)) {
+	    
+	    	// 페이지 파라미터 값 가져오기
+	    	String pageParameter = request.getParameter("page");
 
-			// 리스트 화면에 보내기
-			request.setAttribute("list", list);
-//			WebUtil.forward(request, response, "/WEB-INF/views/board/list.jsp");
+	    	// 페이지 파라미터 값이 비어있으면 기본값 1로 설정
+	    	int currentPage = (pageParameter != null && !pageParameter.isEmpty()) ? Integer.parseInt(pageParameter) : 1;
+	    	
+	    	
+	    	int itemsPerPage = 10;
+	    	int startRow = (currentPage - 1) * itemsPerPage + 1;
+	    	int endRow = startRow + itemsPerPage - 1;
+	    	BoardDao dao = new BoardDaoImpl();
+	    	List<BoardVo> boardlist = dao.getList();
+	    	
+	    	System.out.println(boardlist);
+	    	int totalItem = boardlist.size();
+	        int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
+	        
+	        System.out.println("a:"+totalItem);
+	        System.out.println("a:"+totalPage);
+	        System.out.println("a:"+currentPage);
+	        System.out.println("a:"+totalPage);
+	        System.out.println(startRow);
+	        System.out.println(endRow);
+	        
+	        if(startRow <= totalItem) {
+	        	boardlist=boardlist.subList(startRow-1, Math.min(endRow, totalItem));
+	        } else {
+	            boardlist = new ArrayList<>();
+	        }
+	        request.setAttribute("boardlist", boardlist);
+	        request.setAttribute("currentPage", currentPage);
+	        request.setAttribute("totalPage", totalPage);
+
+	        RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
+	        rd.forward(request, response);
+	    
+	
 			
-			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
-			rd.forward(request, response);
+			
 		} else if ("read".equals(actionName)) {
 			// 게시물 가져오기
 			int no = Integer.parseInt(request.getParameter("no"));
@@ -134,6 +162,7 @@ public class BoardServlet extends HttpServlet {
 						}
 					}
 				}//for
+				
 				System.out.println("파일 업로드 완료");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -167,6 +196,8 @@ public class BoardServlet extends HttpServlet {
 		} 
 		
 		
+		
+		
 		//게시글 검색
 		else if("search".equals(actionName))
 		{
@@ -194,6 +225,7 @@ public class BoardServlet extends HttpServlet {
 		
 	
 	}
+
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
