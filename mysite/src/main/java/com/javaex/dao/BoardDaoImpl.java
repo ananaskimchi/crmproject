@@ -152,9 +152,11 @@ public class BoardDaoImpl implements BoardDao {
       System.out.println("vo.content : ["+vo.getContent()+"]");
       System.out.println("vo.fileName : ["+vo.getFileName()+"]");
       System.out.println("vo.origFName : ["+vo.getOrigFName()+"]");
+      System.out.println("vo.fileName2 : ["+vo.getFileName2()+"]");
+      System.out.println("vo.origFName2 : ["+vo.getOrigFName2()+"]");
       
 			// 3. SQL문 준비 / 바인딩 / 실행
-			String query = "insert into board (no, title, content, hit, reg_date, user_no, file_name, orig_file_name) values (seq_board_no.nextval, ?, ?, 0, sysdate, ?, ?, ?)";
+			String query = "insert into board (no, title, content, hit, reg_date, user_no, file_name, orig_file_name, file_name2, orig_file_name2) values (seq_board_no.nextval, ?, ?, 0, sysdate, ?, ?, ?, ?, ?)";
 			pstmt = conn.prepareStatement(query);
 
 			pstmt.setString(1, vo.getTitle());
@@ -162,6 +164,8 @@ public class BoardDaoImpl implements BoardDao {
 			pstmt.setInt(3, vo.getUserNo());
 			pstmt.setString(4, vo.getFileName());
 			pstmt.setString(5, vo.getOrigFName());
+			pstmt.setString(6, vo.getFileName2());
+			pstmt.setString(7, vo.getOrigFName2());
 			
       
 			count = pstmt.executeUpdate();
