@@ -227,37 +227,7 @@ public class BoardServlet extends HttpServlet {
 
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 
-		} 
-//		//게시글 검색
-//		else if("search".equals(actionName))
-//		{
-//			System.out.println("검색시작");
-//			String searchThings = request.getParameter("searchThings");
-//			
-//			BoardVo searchVo = new BoardVo(searchThings);
-//
-//			BoardDao dao = new BoardDaoImpl();
-//			List<BoardVo> searchResults = dao.search(searchVo);
-//			int totalItem = searchResults.size();
-//      int totalPage = (int) Math.ceil((double) totalItem / itemsPerPage);
-//      
-//      if(startRow <= totalItem) {
-//      	searchResults=searchResults.subList(startRow-1, Math.min(endRow, totalItem));
-//      } else {
-//      	searchResults = new ArrayList<>();
-//      }
-//		
-//			System.out.println(searchResults.toString());
-//			
-//			request.setAttribute("boardlist", searchResults);
-//			request.setAttribute("currentPage", 1);
-//      request.setAttribute("totalPage", totalPage);
-//			
-//			RequestDispatcher rd = request.getRequestDispatcher("WEB-INF/views/board/list.jsp");
-//			rd.forward(request, response);
-//		}		
-		
-		else {
+		} else {
 			WebUtil.redirect(request, response, "/mysite/board?a=list");
 		}
 		

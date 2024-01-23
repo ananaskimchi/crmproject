@@ -24,7 +24,7 @@
     				<option value="to_char(b.reg_date, 'YY-MM-DD HH24:MI')"> 작성일</option>
    				</select>
 					<input type="hidden" name="a" value ="list">
-					<input type="text" id="kwd" name="keyWord">
+					<input type="text" id="kwd" name="keyWord" value="${param.keyWord }">
 					<input type="submit" value="찾기">
 				</form>
 				<table class="tbl-ex">
@@ -53,7 +53,13 @@
 				</table>
 				<div class="pager">
 				     <c:if test="${currentPage > 1}">
-        				<a href="board?a=list&page=${currentPage - 1}">◀</a>
+				     	<c:url var="prevPage" value="board">
+             		<c:param name="a" value="list" />
+             		<c:param name="page" value="${currentPage - 1}" />
+             		<c:param name="keyField" value="${keyField }" />
+             		<c:param name="keyWord" value="${keyWord }" />
+             	</c:url>
+        				<a href="${prevPage}">◀</a>
    					 </c:if>
    					  <c:choose>
 				        <c:when test="${totalPage <= 10}">
@@ -63,7 +69,13 @@
 				                        <a class="selected">${pageNum}</a>
 				                    </c:when>
 				                    <c:otherwise>
-				                        <a href="board?a=list&page=${pageNum}">${pageNum}</a>
+				                    	<c:url var="paging" value="board">
+				                    		<c:param name="a" value="list" />
+				                    		<c:param name="page" value="${pageNum }" />
+				                    		<c:param name="keyField" value="${keyField }" />
+				                    		<c:param name="keyWord" value="${keyWord }" />
+				                    	</c:url>
+			                        <a href="${paging }">${pageNum}</a>
 				                    </c:otherwise>
 				                </c:choose>
 				            </c:forEach>
@@ -80,7 +92,7 @@
 				                                <a class="selected">${pageNum}</a>
 				                            </c:when>
 				                            <c:otherwise>
-				                                <a href="board?a=list&page=${pageNum}">${pageNum}</a>
+				                                <a href="${paging }">${pageNum}</a>
 				                            </c:otherwise>
 				                        </c:choose>
 				                    </c:otherwise>
@@ -90,7 +102,13 @@
 				    </c:choose>
 				
 				    <c:if test="${currentPage < totalPage}">
-				        <a href="board?a=list&page=${currentPage + 1}">▶</a>
+				    <c:url var="nextPage" value="board">
+           		<c:param name="a" value="list" />
+           		<c:param name="page" value="${currentPage + 1}" />
+           		<c:param name="keyField" value="${keyField }" />
+           		<c:param name="keyWord" value="${keyWord }" />
+           	</c:url>
+		        <a href="${nextPage }">▶</a>
 				    </c:if>
    					 			
 				</div>				
