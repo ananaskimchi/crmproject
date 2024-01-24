@@ -47,7 +47,7 @@ public class BoardDaoImpl implements BoardDao {
 				String query = "SELECT b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') as reg_date, u.no as user_no, u.name as name, b.file_name, b.file_name2 "
             + "FROM board b "
             + "LEFT JOIN users u ON b.user_no = u.no "
-            + "WHERE " + keyField + " LIKE ? "
+            + "WHERE " + keyField + " LIKE UPPER(?) "
             + "order by b.no desc";
 				
 				pstmt = conn.prepareStatement(query);
