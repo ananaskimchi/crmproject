@@ -30,7 +30,8 @@
 4. 왼쪽의 네비게이션 바를 통해 홈/방명록/게시판 이동이 가능합니다.
 </br>
 
-![image](https://github.com/ananaskimchi/crmproject/assets/141298734/ba947dc2-9243-44b8-a561-45e2d01156e8)
+![image](https://github.com/ananaskimchi/crmproject/assets/104189608/b454aafc-0e13-4978-b02c-286f9c7b8852)
+
 
 _로그인 시 화면_
 
@@ -59,6 +60,8 @@ _로그인 시 화면_
 </br>
 
 ![image](https://github.com/ananaskimchi/crmproject/assets/141298734/f99441d8-88e0-429e-b4c2-18d3e3e54c69)
+![image](https://github.com/ananaskimchi/crmproject/assets/104189608/34ea484c-6f68-48b7-a17f-6beaacde736c)
+
 
 _로그인 시 화면_
 
@@ -80,6 +83,8 @@ _로그인 시 화면_
 </br>
 
 ![image](https://github.com/ananaskimchi/crmproject/assets/141298734/448ac162-a2fb-4346-973f-2603a4ea1348)
+![image](https://github.com/ananaskimchi/crmproject/assets/104189608/53cc4ec4-b854-42b3-985f-687722c10b9d)
+
 
 _로그인 시 화면_
 
