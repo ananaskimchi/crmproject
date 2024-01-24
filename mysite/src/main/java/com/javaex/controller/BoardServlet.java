@@ -91,9 +91,6 @@ public class BoardServlet extends HttpServlet {
 			System.out.println(boardVo.toString());
 			
 			// 조회수 늘리기
-			int 조회수 = boardVo.getHit();
-			조회수 +=1;
-			boardVo.setHit(조회수);
 			dao.hitUpdate(boardVo);
 					
 			

@@ -303,7 +303,7 @@ public class BoardDaoImpl implements BoardDao {
 			String query = "update board set hit = ? where no = ? ";
 			pstmt = conn.prepareStatement(query);
 
-			pstmt.setInt(1, vo.getHit());
+			pstmt.setInt(1, vo.getHit()+1);
 			pstmt.setInt(2, vo.getNo());
 
 			count = pstmt.executeUpdate();

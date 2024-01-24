@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import com.javaex.vo.BoardVo;
 import com.javaex.vo.UserVo;
@@ -44,9 +45,6 @@ public class BoardDaoTest {
 			System.out.println("게시글 입력을 테스트합니다.");
 			System.out.print("\n");
 
-			UserVo userVo = new UserVo(1, "Test", "Test", "Test", "Test");
-			userDao.insert(userVo);
-
 			String user = " SELECT NO, NAME, EMAIL, PASSWORD, GENDER" 
 					+ " FROM USERS";
 
@@ -58,14 +56,15 @@ public class BoardDaoTest {
 			vo.setUserNo(userNumber);
 			vo.setTitle("Test");
 			vo.setContent("Test");
-
-			if (dao.insert(vo) == 1) {
+			int ins = dao.insert(vo);
+			
+			if (ins == 1) {
 				System.out.println("게시물 입력을 성공했습니다.");
 				System.out.print("\n");
 				String query = "select b.no, b.title, b.hit, to_char(b.reg_date, 'YY-MM-DD HH24:MI') \"reg_date\", b.user_no, u.name "
 						+ " from board b, users u "
 						+ " where b.user_no = u.no "
-						+ " order by no desc";
+						+ " order by b.no";
 
 				pstmt = conn.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				rs = pstmt.executeQuery();
@@ -81,8 +80,9 @@ public class BoardDaoTest {
 				vo.setContent("Update");
 				vo.setNo(number);
 				System.out.print("\n");
-
-				if (dao.update(vo) == 1) {
+				int up = dao.update(vo);
+				
+				if (up == 1) {
 					System.out.println("게시물 업데이트를 성공했습니다.");
 					System.out.print("\n");
 				} else {
@@ -91,29 +91,18 @@ public class BoardDaoTest {
 
 				System.out.println("게시물 조회수 수정을 테스트합니다.");
 				System.out.print("\n");
-
-				vo.setHit(10);
-				vo.setNo(number);
-
-				if (dao.hitUpdate(vo) == 1) {
+				int hit = dao.hitUpdate(vo);
+				
+				if (hit == 1) {
 					System.out.println("게시물 조회수 수정을 성공했습니다.");
 				} else {
 					System.out.println("게시물 조회수 수정을 실패했습니다.");
 				}
 
-				System.out.println("게시물 검색을 테스트합니다.");
-				System.out.print("\n");
-
-				// 검색할 때 제목으로 검색
-				vo.setTitle("Test");
-
 				System.out.println("테스트용 게시물을 삭제합니다.");
 				System.out.print("\n");
-
-				if (dao.delete(number) == 1) {
-					String delete = "DELETE FROM USERS WHERE NO= "+userNumber+"";
-					userPstmt.executeUpdate(delete);
-
+				int del = dao.delete(number);
+				if (del == 1) {
 					System.out.println("게시물을 삭제하였습니다.");
 				} else {
 					System.out.println("게시물을 삭제하는 것을 실패했습니다.");
