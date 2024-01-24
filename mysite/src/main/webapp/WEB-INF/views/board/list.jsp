@@ -18,7 +18,7 @@
 			<div id="board">
 				<form id="search_form" action="/mysite/board" method="post">
 					<select name="keyField" size="1" >
-    				<option value="b.title"> 제 목</option>
+    				<option value="b.title"}> 제 목</option>
     				<option value="b.content||UPPER(b.file_name)||UPPER(b.file_name2)"> 내 용</option>
     				<option value="u.name"> 글쓴이</option>
     				<option value="to_char(b.reg_date, 'YY-MM-DD HH24:MI')"> 작성일</option>

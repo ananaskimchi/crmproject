@@ -42,6 +42,7 @@ public class BoardServlet extends HttpServlet {
 	    	if (request.getParameter("keyWord") != null) {
 	    		keyWord = request.getParameter("keyWord");
 	    		keyField = request.getParameter("keyField");
+	    		
 	    	}
 	      BoardDao dao = new BoardDaoImpl();
 	      System.out.println("keyword:" + keyWord);
